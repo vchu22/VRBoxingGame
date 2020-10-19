@@ -20,4 +20,23 @@ public class PunchHand : MonoBehaviour
         rBody.MovePosition(hand.transform.position);
         rBody.MoveRotation(hand.transform.rotation);
     }
+
+    void OnCollisionEnter(Collision other)
+    {
+        Debug.LogError("HIT!");
+        Rigidbody otherR = other.gameObject.GetComponentInChildren<Rigidbody>();
+        if (other == null)
+        {
+            return;
+        }
+        Vector3 avgPoint = Vector3.zero;
+        foreach (ContactPoint p in other.contacts)
+        {
+            avgPoint += p.point;
+        }
+        avgPoint /= other.contacts.Length;
+
+        Vector3 dir = (avgPoint - transform.position).normalized;
+        otherR.AddForceAtPosition(dir * 10f * rBody.velocity.magnitude, avgPoint);
+    }
 }
